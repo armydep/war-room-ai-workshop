@@ -11,9 +11,10 @@ import { getAnalyticsSummary, getAnalyticsTimeline } from '../services/api';
 interface DashboardProps {
   liveFeed: Incident[];
   onSelectIncident: (id: number) => void;
+  dark: boolean;
 }
 
-export function Dashboard({ liveFeed, onSelectIncident }: DashboardProps): JSX.Element {
+export function Dashboard({ liveFeed, onSelectIncident, dark }: DashboardProps): JSX.Element {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
   const [timeline, setTimeline] = useState<TimelineBucket[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,13 +48,13 @@ export function Dashboard({ liveFeed, onSelectIncident }: DashboardProps): JSX.E
       <StatCards data={summary} loading={loading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <SeverityChart data={summary?.severity_distribution ?? null} loading={loading} />
-        <TimelineChart data={timeline} loading={loading} />
+        <SeverityChart data={summary?.severity_distribution ?? null} loading={loading} dark={dark} />
+        <TimelineChart data={timeline} loading={loading} dark={dark} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <SourceChart data={summary?.source_distribution ?? null} loading={loading} />
+          <SourceChart data={summary?.source_distribution ?? null} loading={loading} dark={dark} />
         </div>
         <IncidentFeed incidents={liveFeed} onSelectIncident={onSelectIncident} />
       </div>

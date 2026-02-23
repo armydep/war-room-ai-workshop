@@ -61,29 +61,30 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
     }
   }
 
+  const inputClass = 'w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-gray-200';
+
   return (
     <div className="space-y-6">
-      <button onClick={onBack} className="text-sm text-blue-600 hover:text-blue-800">&larr; Back to Dashboard</button>
+      <button onClick={onBack} className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">&larr; Back to Dashboard</button>
 
       <div className="card p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Alert Configuration</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Alert Configuration</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={e => setName(e.target.value)}
                 placeholder="e.g., Critical Spike"
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
-              <select value={severity} onChange={e => setSeverity(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Severity</label>
+              <select value={severity} onChange={e => setSeverity(e.target.value)} className={inputClass}>
                 <option value="critical">Critical</option>
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
@@ -91,23 +92,23 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Threshold (count)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Threshold (count)</label>
               <input
                 type="number"
                 value={threshold}
                 onChange={e => setThreshold(Number(e.target.value))}
                 min={1}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className={inputClass}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Window (minutes)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Window (minutes)</label>
               <input
                 type="number"
                 value={windowMinutes}
                 onChange={e => setWindowMinutes(Number(e.target.value))}
                 min={1}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                className={inputClass}
               />
             </div>
           </div>
@@ -117,12 +118,12 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
               id="enabled"
               checked={enabled}
               onChange={e => setEnabled(e.target.checked)}
-              className="rounded border-gray-300"
+              className="rounded border-gray-300 dark:border-gray-600"
             />
-            <label htmlFor="enabled" className="text-sm text-gray-700">Enabled</label>
+            <label htmlFor="enabled" className="text-sm text-gray-700 dark:text-gray-300">Enabled</label>
           </div>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
           <button
             type="submit"
@@ -135,8 +136,8 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
       </div>
 
       <div className="card">
-        <div className="p-4 border-b border-gray-200">
-          <h3 className="text-sm font-semibold text-gray-700">Existing Rules</h3>
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Existing Rules</h3>
         </div>
         {loading ? (
           <div className="p-4 text-center text-gray-400">Loading...</div>
@@ -146,7 +147,7 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-left text-gray-600">
+                <tr className="bg-gray-50 dark:bg-gray-800/50 text-left text-gray-600 dark:text-gray-400">
                   <th className="px-4 py-3 font-medium">Name</th>
                   <th className="px-4 py-3 font-medium">Severity</th>
                   <th className="px-4 py-3 font-medium">Threshold</th>
@@ -154,15 +155,15 @@ export function AlertConfig({ onBack }: AlertConfigProps): JSX.Element {
                   <th className="px-4 py-3 font-medium">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {configs.map((config) => (
                   <tr key={config.id}>
-                    <td className="px-4 py-3 font-medium text-gray-800">{config.name}</td>
-                    <td className="px-4 py-3 text-gray-600">{config.severity}</td>
-                    <td className="px-4 py-3 text-gray-600">{config.threshold} incidents</td>
-                    <td className="px-4 py-3 text-gray-600">{config.window_minutes} min</td>
+                    <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200">{config.name}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{config.severity}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{config.threshold} incidents</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{config.window_minutes} min</td>
                     <td className="px-4 py-3">
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${config.enabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${config.enabled ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>
                         {config.enabled ? 'Active' : 'Disabled'}
                       </span>
                     </td>

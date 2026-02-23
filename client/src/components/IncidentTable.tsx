@@ -6,16 +6,16 @@ interface IncidentTableProps {
 }
 
 const SEVERITY_BADGE: Record<string, string> = {
-  critical: 'bg-red-100 text-red-800',
-  high: 'bg-amber-100 text-amber-800',
-  medium: 'bg-blue-100 text-blue-800',
-  low: 'bg-gray-100 text-gray-700',
+  critical: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-400',
+  high: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-400',
+  medium: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-400',
+  low: 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
 };
 
 const STATUS_BADGE: Record<string, string> = {
-  open: 'border-red-400 text-red-600',
-  investigating: 'border-yellow-400 text-yellow-700',
-  resolved: 'border-green-400 text-green-600',
+  open: 'border-red-400 text-red-600 dark:border-red-500 dark:text-red-400',
+  investigating: 'border-yellow-400 text-yellow-700 dark:border-yellow-500 dark:text-yellow-400',
+  resolved: 'border-green-400 text-green-600 dark:border-green-500 dark:text-green-400',
 };
 
 export function IncidentTable({ onSelectIncident }: IncidentTableProps): JSX.Element {
@@ -56,31 +56,30 @@ export function IncidentTable({ onSelectIncident }: IncidentTableProps): JSX.Ele
 
   const sortIndicator = (column: string): string => {
     if (sort !== column) return '';
-    return order === 'asc' ? ' ↑' : ' ↓';
+    return order === 'asc' ? ' \u2191' : ' \u2193';
   };
+
+  const selectClass = 'text-sm border border-gray-300 dark:border-gray-600 rounded-md px-3 py-1.5 bg-white dark:bg-gray-800 dark:text-gray-200';
 
   return (
     <div className="card">
-      <div className="p-4 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Incident Log</h3>
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Incident Log</h3>
         <div className="flex flex-wrap gap-3">
-          <select value={severity} onChange={handleFilterChange(setSeverity)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+          <select value={severity} onChange={handleFilterChange(setSeverity)} className={selectClass}>
             <option value="">All Severities</option>
             <option value="critical">Critical</option>
             <option value="high">High</option>
             <option value="medium">Medium</option>
             <option value="low">Low</option>
           </select>
-          <select value={status} onChange={handleFilterChange(setStatus)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+          <select value={status} onChange={handleFilterChange(setStatus)} className={selectClass}>
             <option value="">All Statuses</option>
             <option value="open">Open</option>
             <option value="investigating">Investigating</option>
             <option value="resolved">Resolved</option>
           </select>
-          <select value={source} onChange={handleFilterChange(setSource)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white">
+          <select value={source} onChange={handleFilterChange(setSource)} className={selectClass}>
             <option value="">All Sources</option>
             <option value="monitoring">Monitoring</option>
             <option value="user_report">User Report</option>
@@ -91,28 +90,28 @@ export function IncidentTable({ onSelectIncident }: IncidentTableProps): JSX.Ele
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 text-red-700 text-sm">{error}</div>
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm">{error}</div>
       )}
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 text-left text-gray-600">
-              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900" onClick={() => toggleSort('severity')}>
+            <tr className="bg-gray-50 dark:bg-gray-800/50 text-left text-gray-600 dark:text-gray-400">
+              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" onClick={() => toggleSort('severity')}>
                 Severity{sortIndicator('severity')}
               </th>
-              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900" onClick={() => toggleSort('title')}>
+              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" onClick={() => toggleSort('title')}>
                 Title{sortIndicator('title')}
               </th>
               <th className="px-4 py-3 font-medium">Source</th>
               <th className="px-4 py-3 font-medium">Status</th>
               <th className="px-4 py-3 font-medium">Assigned To</th>
-              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900" onClick={() => toggleSort('created_at')}>
+              <th className="px-4 py-3 font-medium cursor-pointer hover:text-gray-900 dark:hover:text-gray-200" onClick={() => toggleSort('created_at')}>
                 Created{sortIndicator('created_at')}
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
             {loading ? (
               <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">Loading...</td></tr>
             ) : incidents.length === 0 ? (
@@ -121,21 +120,21 @@ export function IncidentTable({ onSelectIncident }: IncidentTableProps): JSX.Ele
               incidents.map((incident) => (
                 <tr key={incident.id}
                   onClick={() => onSelectIncident(incident.id)}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors">
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/30 cursor-pointer transition-colors">
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${SEVERITY_BADGE[incident.severity]}`}>
                       {incident.severity}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800 max-w-xs truncate">{incident.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{incident.source.replace('_', ' ')}</td>
+                  <td className="px-4 py-3 font-medium text-gray-800 dark:text-gray-200 max-w-xs truncate">{incident.title}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{incident.source.replace('_', ' ')}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${STATUS_BADGE[incident.status]}`}>
                       {incident.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{incident.assigned_to || '—'}</td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(incident.created_at).toLocaleDateString()}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{incident.assigned_to || '\u2014'}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{new Date(incident.created_at).toLocaleDateString()}</td>
                 </tr>
               ))
             )}
@@ -144,23 +143,23 @@ export function IncidentTable({ onSelectIncident }: IncidentTableProps): JSX.Ele
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="px-4 py-3 border-t border-gray-200 flex items-center justify-between text-sm text-gray-600">
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
           <span>
-            Showing {(pagination.page - 1) * pagination.limit + 1}–
+            Showing {(pagination.page - 1) * pagination.limit + 1}&ndash;
             {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
           </span>
           <div className="flex gap-2">
             <button
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page <= 1}
-              className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             <button
               onClick={() => setPage(p => p + 1)}
               disabled={page >= pagination.totalPages}
-              className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-3 py-1 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next
             </button>
