@@ -1,0 +1,139 @@
+import { useState, useEffect } from 'react';
+import { IncidentWithTimeline } from '../types';
+import { getIncident } from '../services/api';
+
+interface IncidentDetailProps {
+  incidentId: number;
+  onBack: () => void;
+}
+
+const SEVERITY_BADGE: Record<string, string> = {
+  critical: 'bg-red-100 text-red-800',
+  high: 'bg-amber-100 text-amber-800',
+  medium: 'bg-blue-100 text-blue-800',
+  low: 'bg-gray-100 text-gray-700',
+};
+
+const STATUS_BADGE: Record<string, string> = {
+  open: 'bg-red-50 text-red-600 border-red-200',
+  investigating: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+  resolved: 'bg-green-50 text-green-600 border-green-200',
+};
+
+const ACTION_ICONS: Record<string, string> = {
+  created: '🔵',
+  status_change: '🔄',
+  severity_change: '⚠️',
+  assigned: '👤',
+  comment: '💬',
+};
+
+export function IncidentDetail({ incidentId, onBack }: IncidentDetailProps): JSX.Element {
+  const [incident, setIncident] = useState<IncidentWithTimeline | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchDetail(): Promise<void> {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getIncident(incidentId);
+        if (!cancelled) setIncident(data);
+      } catch (err) {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load incident');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchDetail();
+    return () => { cancelled = true; };
+  }, [incidentId]);
+
+  if (loading) {
+    return (
+      <div className="card p-6">
+        <button onClick={onBack} className="text-sm text-blue-600 hover:text-blue-800 mb-4">&larr; Back</button>
+        <div className="animate-pulse space-y-4">
+          <div className="h-6 bg-gray-200 rounded w-3/4" />
+          <div className="h-4 bg-gray-200 rounded w-1/2" />
+          <div className="h-20 bg-gray-200 rounded" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !incident) {
+    return (
+      <div className="card p-6">
+        <button onClick={onBack} className="text-sm text-blue-600 hover:text-blue-800 mb-4">&larr; Back</button>
+        <div className="text-red-600">{error || 'Incident not found'}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="card p-6">
+      <button onClick={onBack} className="text-sm text-blue-600 hover:text-blue-800 mb-4">&larr; Back to Dashboard</button>
+
+      <div className="mb-6">
+        <div className="flex items-center gap-3 mb-2">
+          <h2 className="text-xl font-bold text-gray-900">{incident.title}</h2>
+          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${SEVERITY_BADGE[incident.severity]}`}>
+            {incident.severity}
+          </span>
+          <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${STATUS_BADGE[incident.status]}`}>
+            {incident.status}
+          </span>
+        </div>
+        <p className="text-gray-600 mb-4">{incident.description}</p>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div>
+            <span className="text-gray-500">Source</span>
+            <p className="font-medium">{incident.source.replace('_', ' ')}</p>
+          </div>
+          <div>
+            <span className="text-gray-500">Assigned To</span>
+            <p className="font-medium">{incident.assigned_to || 'Unassigned'}</p>
+          </div>
+          <div>
+            <span className="text-gray-500">Created</span>
+            <p className="font-medium">{new Date(incident.created_at).toLocaleString()}</p>
+          </div>
+          <div>
+            <span className="text-gray-500">Resolved</span>
+            <p className="font-medium">{incident.resolved_at ? new Date(incident.resolved_at).toLocaleString() : '—'}</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-4">Timeline</h3>
+        <div className="relative">
+          <div className="absolute left-4 top-0 bottom-0 w-px bg-gray-200" />
+          <div className="space-y-4">
+            {incident.timeline.map((event) => (
+              <div key={event.id} className="relative pl-10">
+                <div className="absolute left-2.5 top-1 text-sm">
+                  {ACTION_ICONS[event.action] || '●'}
+                </div>
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-medium text-gray-500 uppercase">{event.action.replace('_', ' ')}</span>
+                    <span className="text-xs text-gray-400">by {event.actor}</span>
+                  </div>
+                  <p className="text-sm text-gray-700">{event.details}</p>
+                  <p className="text-xs text-gray-400 mt-1">{new Date(event.created_at).toLocaleString()}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
